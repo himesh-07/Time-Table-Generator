@@ -1,0 +1,6 @@
+{
+  "name": "Plan My Class - NEP 2020 AI Timetable Generator",
+  "description": "AI-Powered Conflict-Free Timetable Generation for Multidisciplinary Education under NEP 2020 using Constraint Satisfaction and Google OR-Tools.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

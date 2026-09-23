@@ -1,0 +1,106 @@
+{
+  "entities": {
+    "Timetable": {
+      "title": "Timetable",
+      "description": "Generated academic timetable entries and optimization metrics",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "academicSession": { "type": "string" },
+        "semester": { "type": "number" },
+        "entries": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "metrics": { "type": "object" },
+        "conflicts": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "createdBy": { "type": "string" }
+      },
+      "required": ["academicSession", "semester", "entries"]
+    },
+    "Department": {
+      "title": "Department",
+      "description": "Academic departments",
+      "type": "object",
+      "properties": {
+        "id": { "type": "number" },
+        "name": { "type": "string" },
+        "code": { "type": "string" },
+        "hodName": { "type": "string" }
+      },
+      "required": ["name", "code"]
+    },
+    "Faculty": {
+      "title": "Faculty",
+      "description": "Faculty members and workload preferences",
+      "type": "object",
+      "properties": {
+        "id": { "type": "number" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "employeeCode": { "type": "string" },
+        "designation": { "type": "string" },
+        "departmentId": { "type": "number" },
+        "maxWeeklyHours": { "type": "number" }
+      },
+      "required": ["name", "employeeCode"]
+    },
+    "Subject": {
+      "title": "Subject",
+      "description": "NEP 2020 curriculum subjects",
+      "type": "object",
+      "properties": {
+        "id": { "type": "number" },
+        "name": { "type": "string" },
+        "code": { "type": "string" },
+        "departmentId": { "type": "number" },
+        "credits": { "type": "number" },
+        "weeklyHours": { "type": "number" },
+        "subjectType": { "type": "string" },
+        "isLab": { "type": "boolean" },
+        "primaryFacultyId": { "type": "number" }
+      },
+      "required": ["name", "code", "credits", "subjectType"]
+    },
+    "Facility": {
+      "title": "Facility",
+      "description": "Classrooms and laboratories",
+      "type": "object",
+      "properties": {
+        "id": { "type": "number" },
+        "roomNumber": { "type": "string" },
+        "building": { "type": "string" },
+        "capacity": { "type": "number" },
+        "type": { "type": "string" },
+        "equipmentType": { "type": "string" }
+      },
+      "required": ["roomNumber", "capacity", "type"]
+    }
+  },
+  "firestore": {
+    "/timetables/{timetableId}": {
+      "schema": "Timetable",
+      "description": "Active and saved academic timetables"
+    },
+    "/departments/{deptId}": {
+      "schema": "Department",
+      "description": "Academic department records"
+    },
+    "/faculty/{facId}": {
+      "schema": "Faculty",
+      "description": "Faculty profiles and constraints"
+    },
+    "/subjects/{subjectId}": {
+      "schema": "Subject",
+      "description": "NEP 2020 course catalog"
+    },
+    "/facilities/{facilityId}": {
+      "schema": "Facility",
+      "description": "Classrooms and laboratories"
+    }
+  }
+}
