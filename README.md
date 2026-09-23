@@ -1,124 +1,334 @@
-# Plan My Class — AI-Powered Conflict-Free Timetable Generation System
-> **Aligned with NEP 2020 for Multidisciplinary Education Structure**  
-> *Theme: Smart Automation & Academic Optimization*
+# 🗓️ NEP SmartTimetable AI
+
+
+**Live Link:** https://timetable-a2006.web.app/
+---
+**AI-Powered Conflict-Free Timetable Generation for Multidisciplinary Education**
+
+A full-stack, AI/optimization-driven timetable generation system built around **NEP 2020's** multidisciplinary, credit-based, choice-based education structure. The system automatically generates optimized, conflict-free timetables for students, faculty, classrooms, and laboratories — powered by **Google OR-Tools** for constraint optimization and an **AI assistant** for natural-language insights and explanations.
 
 ---
 
-## 📌 1. Project Overview & Problem Statement
+## 📌 Problem Statement
 
-Modern higher education under India's **National Education Policy (NEP 2020)** transitions universities from rigid single-department schedules to flexible, **choice-based and multidisciplinary credit systems**. 
+> **AI-Based Timetable Generation System aligned with NEP 2020 for Multidisciplinary Education Structure**
+> Theme: *Smart Automation*
 
-Students can now combine:
-- **Major disciplinary subjects** (e.g. Computer Science Algorithms)
-- **Minor specializations** (e.g. Electronics circuits or AI)
-- **Discipline-Specific Electives (DSE)**
-- **Multidisciplinary Open Electives** (e.g. CS students taking *Psychology for Engineers* or *Cyber Law & Ethics*)
-- **Ability Enhancement Courses (AEC)** (Technical Communication)
-- **Skill Enhancement Courses (SEC)** (Full Stack Web, Python Analytics)
-- **Value-Added Courses (VAC)** (Environmental Science, Indian Knowledge Systems)
-- **Specialized Practical Laboratories** (Computer Labs, VLSI / IoT Labs)
+Traditional timetable creation is manual, error-prone, and cannot easily accommodate NEP 2020's flexible, credit-based, multidisciplinary curriculum where students in the same batch can choose entirely different subject combinations (majors, minors, electives, skill courses, etc.).
 
-This combinatorial explosion creates massive scheduling bottlenecks:
-1. Faculty overlap and double-booking.
-2. Multidisciplinary elective clashes across student cohorts.
-3. Classroom and laboratory capacity mismatches.
-4. Unbalanced faculty workloads and disjointed student schedules with random 3-hour gaps.
-
-**Plan My Class** solves this through **Google OR-Tools Constraint Programming (CP-SAT)** combined with an intuitive multi-role university management portal and an integrated AI assistant.
+This system solves that by using **constraint programming** to generate schedules that are mathematically verified to be conflict-free — not randomly assembled.
 
 ---
 
-## 🛠️ 2. Technology Stack
+## ✨ Key Features
 
-| Layer | Technologies Used |
-|---|---|
-| **Frontend** | React 19, Vite, Tailwind CSS v4, Lucide Icons |
-| **Backend** | Python 3.10+, FastAPI, Pydantic v2, SQLAlchemy ORM |
-| **Optimization** | **Google OR-Tools (CP-SAT Solver)** for Constraint Satisfaction |
-| **AI Insights** | Google Gemini API (`@google/genai`) & OpenAI API |
-| **Exports** | `openpyxl` (Multi-sheet Excel), `reportlab` & `jspdf` (Publication PDFs) |
-| **Data Ingestion**| `python-multipart`, CSV/Excel file validation |
-| **Database** | SQLite for instant development; direct drop-in for PostgreSQL |
-
----
-
-## 🧠 3. Optimization Architecture (Google OR-Tools CP-SAT)
-
-The core optimization engine uses **Constraint Programming over Satisfiability (CP-SAT)**. Mathematical optimization is handled deterministically by Google OR-Tools (not hallucinated by LLMs).
-
-### Hard Constraints (Zero Violation Tolerance):
-$$\sum_{r} X_{s, d, t, r} = 1 \quad \forall s \in \text{Sessions}$$
-1. **No Faculty Clash**: A faculty member can teach at most 1 class during slot $(d, t)$.
-2. **No Student Group Clash**: A student cohort can attend at most 1 lecture during slot $(d, t)$.
-3. **No Room/Lab Clash**: A physical room or lab can host at most 1 class at time $(d, t)$.
-4. **Room Capacity**: $\text{Room Capacity} \ge \text{Cohort Strength}$.
-5. **Lab Requirement**: Lab subjects must be assigned to matching laboratory facilities (Computer Lab, Electronics Lab).
-6. **Faculty Availability**: $X_{s, d, t, r} = 0$ if faculty is unavailable during $(d, t)$.
-7. **Credit & Hour Satisfaction**: Total assigned slots equal the mandated credit hours.
-
-### Soft Constraints (Weighted Penalty Minimization):
-$$\min Z = w_1 \cdot \text{FacultyVariance} + w_2 \cdot \text{StudentVariance} + w_3 \cdot \text{Gaps} + w_4 \cdot \text{ConsecutiveOverload} - w_5 \cdot \text{PreferredTimes}$$
-- **Faculty Workload Balance**: Penalizes days with $>4$ classes or erratic spikes.
-- **Student Workload Balance**: Spreads subjects evenly across Monday through Friday.
-- **Avoid Consecutive Fatigue**: Discourages more than 3 consecutive theory classes without a break.
-- **Avoid Fragmented Gaps**: Prevents awkward isolated free periods between lectures.
-- **Synchronized NEP Electives**: Aligns open multidisciplinary slots across departments.
+- Automatic, conflict-free timetable generation (students, faculty, rooms, labs)
+-  Hard constraint enforcement (no double-booking of faculty, batches, rooms, or labs)
+-  Soft constraint optimization (workload balance, preferred slots, minimal gaps/clustering)
+-  Full NEP 2020 support — Majors, Minors, Electives, Multidisciplinary, Ability Enhancement, Skill-based, Value-added, Lab, and Credit/Choice-based courses
+-  Role-based access — **Administrator**, **Faculty**, **Student**
+-  Conflict detection engine with severity levels and suggested resolutions
+-  AI Assistant for natural-language Q&A about the generated timetable
+-  Multilingual UI (English / Hindi, extensible)
+-  Excel and PDF export of timetables
+-  CSV/Excel bulk data upload with validation
+-  Analytics dashboard — workload balance, room/lab utilization, conflict trends
+-  Responsive design for desktop, tablet, and mobile
 
 ---
 
-## 🚀 4. How to Run the Application
+## 🏗️ Architecture
 
-### Option A: Running the Frontend & Integrated Engine (Vite Dev Server)
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Run the Vite development server
-npm run dev
-# App will run at http://localhost:3000
+```
+                    USER
+                     |
+                     v
+          FRONTEND (React + TypeScript)
+                     |
+                     v
+            FASTAPI BACKEND (Python)
+                     |
+        +------------+------------+
+        |                         |
+        v                         v
+   SQL DATABASE               OR-TOOLS
+   (SQLAlchemy ORM)          (CP Optimizer)
+        |                         |
+        +------------+------------+
+                     |
+                     v
+            GENERATED TIMETABLE
+                     |
+        +------------+------------+
+        |            |            |
+        v            v            v
+    Student       Faculty        Room
+   Timetable     Timetable    Timetable
 ```
 
-### Option B: Running the Python FastAPI Backend (Windows PowerShell)
-```powershell
-# 1. Create and activate a Python virtual environment
+The **AI Assistant** (OpenAI / Gemini) is connected separately through the backend and answers questions using real application data — it does **not** perform the mathematical optimization itself. All scheduling is solved by **Google OR-Tools** using Constraint Satisfaction / Constraint Programming.
+
+---
+
+## 🧠 Optimization Approach
+
+### Hard Constraints (must never be violated)
+- Faculty cannot teach two classes at the same time
+- A student/batch cannot attend two classes at the same time
+- A classroom/lab cannot be double-booked
+- Faculty availability must be respected
+- Classroom capacity ≥ required student strength
+- Lab-required subjects must use an appropriate laboratory
+- Required subject credits and weekly lecture/lab hours must be satisfied
+
+### Soft Constraints (weighted, optimized)
+- Faculty/student preferred time slots
+- Balanced faculty and student workload
+- Minimal consecutive classes / unnecessary gaps
+- Avoiding early/late classes where possible
+- Even spread of subjects across the week
+- Minimal lab clustering, maximal classroom utilization
+
+The system reports an **optimization summary**: hard/soft constraints satisfied, number of conflicts, workload balance, room utilization, and an overall optimization score.
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- React + TypeScript (Vite)
+- Tailwind CSS
+- Firebase (Hosting / Auth / Data)
+
+### Backend
+- Python
+- FastAPI
+- SQLAlchemy (ORM)
+- Pydantic / Pydantic Settings
+
+### AI / Optimization
+- Google OR-Tools — core scheduling & optimization engine
+- OpenAI API / Google Gemini — AI assistant, explanations, insights
+
+### Database
+- SQLite (development)
+- PostgreSQL-ready for production/cloud deployment
+
+### Data Export & Uploads
+- `openpyxl` — Excel export
+- `reportlab` — PDF export
+- `python-multipart` — file uploads (CSV/Excel)
+
+### Deployment
+- Firebase Hosting
+
+---
+
+## 📁 Project Structure
+
+```
+TIME_TABLE/
+│
+├── .firebase/                  # Firebase build/cache
+├── backend/                    # Python FastAPI backend
+│   ├── models/                 # SQLAlchemy models
+│   ├── schemas/                 # Pydantic schemas
+│   ├── routers/                 # API route handlers
+│   ├── services/                 # Business logic
+│   ├── optimizer/                # OR-Tools scheduling engine
+│   │   ├── scheduler.py
+│   │   ├── constraints.py
+│   │   └── objective.py
+│   ├── ai/                       # AI assistant integration
+│   │   └── assistant.py
+│   ├── exports/                   # Excel/PDF export logic
+│   │   ├── excel_export.py
+│   │   └── pdf_export.py
+│   ├── uploads/                    # Uploaded CSV/Excel files
+│   ├── database.py
+│   └── main.py
+│
+├── dist/                         # Production build output
+├── node_modules/                 # Frontend dependencies
+│
+├── src/                          # React frontend source
+│   ├── components/                # UI components
+│   ├── data/                      # Static/demo data
+│   ├── engine/                    # Client-side scheduling helpers
+│   ├── i18n/                      # Multilingual translation files
+│   ├── types/                     # TypeScript types
+│   ├── utils/                     # Utility functions
+│   ├── App.tsx
+│   ├── firebase.ts
+│   ├── index.css
+│   └── main.tsx
+│
+├── .env.example                  # Environment variable template
+├── .firebaserc
+├── .gitignore
+├── bun.lock
+├── firebase-applet-config.json
+├── firebase-blueprint.json
+├── firebase.json
+├── firestore.rules
+├── index.html
+├── metadata.json
+├── package-lock.json
+├── package.json
+├── README.md
+├── requirements.txt
+├── tsconfig.json
+└── vite.config.ts
+```
+
+---
+
+## 👥 User Roles
+
+### 🧑‍💼 Administrator
+Manage departments, courses, subjects, faculty, classrooms, labs, and student batches. Define faculty availability, constraints, and subject credits. Generate/regenerate timetables, detect conflicts, view analytics, and export data.
+
+### 👨‍🏫 Faculty
+View personal timetable, weekly schedule, assigned subjects, workload, free periods, and room/lab allocations. Submit preferred availability where permitted.
+
+### 🎓 Student
+View personal/batch timetable, subjects, classrooms, faculty, free periods, and elective/multidisciplinary classes. Switch UI language.
+
+---
+
+## ⚙️ Environment Variables
+
+Create a `.env` file based on `.env.example`:
+
+```env
+OPENAI_API_KEY=your_key_here
+DATABASE_URL=sqlite:///./timetable.db
+```
+
+**Never** commit real API keys or secrets. All sensitive values are read from environment variables on the backend only — never exposed in frontend code.
+
+---
+
+## 📦 Backend Requirements (`requirements.txt`)
+
+```txt
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+sqlalchemy==2.0.36
+pydantic==2.10.4
+ortools==9.11.4210
+google-genai==2.4.0
+openai==1.59.5
+openpyxl==3.1.5
+reportlab==4.2.5
+python-multipart==0.0.20
+python-dotenv==1.0.1
+pydantic-settings==2.7.0
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/<your-username>/nep-smart-timetable-ai.git
+cd nep-smart-timetable-ai
+```
+
+### 2. Backend setup
+```bash
+cd backend
 python -m venv venv
-.\venv\Scripts\Activate.ps1
+venv\Scripts\activate          # Windows PowerShell
+# source venv/bin/activate     # macOS/Linux
 
-# 2. Install requirements
-pip install -r requirements.txt
-
-# 3. Start the FastAPI server
-uvicorn backend.main:app --reload --port 8000
-# API docs available at http://localhost:8000/docs
+pip install -r ../requirements.txt
+cp ../.env.example .env        # then fill in your keys
+uvicorn main:app --reload
 ```
 
-### Option C: Running the Python FastAPI Backend (Linux / macOS)
+### 3. Frontend setup
 ```bash
-# 1. Create and activate virtual environment
-python3 -m venv venv
-source venv/bin/activate
+cd ..
+bun install                    # or: npm install
+bun run dev                    # or: npm run dev
+```
 
-# 2. Install requirements
-pip install -r requirements.txt
-
-# 3. Run FastAPI server
-uvicorn backend.main:app --reload --port 8000
+### 4. Build & deploy (Firebase Hosting)
+```bash
+bun run build                  # or: npm run build
+firebase deploy
 ```
 
 ---
 
-## 🌐 5. Multilingual Support
+## 📊 API Overview
 
-The application provides instantaneous real-time localization between:
-- **English (EN)**
-- **हिन्दी (Hindi - HI)**
-
-All labels, statuses, card metrics, days, subject categories, and conflict descriptions are dynamically rendered without page reload. To add a new language (e.g., Tamil, Telugu, Marathi), simply add a translation key to `src/i18n/translations.ts`.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/login` | User authentication |
+| GET/POST | `/api/departments` | Manage departments |
+| GET/POST/PUT/DELETE | `/api/faculty` | Manage faculty |
+| GET/POST | `/api/students` | Manage students |
+| GET/POST | `/api/subjects` | Manage subjects |
+| GET/POST | `/api/classrooms` | Manage classrooms |
+| GET/POST | `/api/labs` | Manage laboratories |
+| GET/POST | `/api/constraints` | Manage constraints |
+| POST | `/api/timetable/generate` | Run OR-Tools optimization |
+| GET | `/api/timetable/student/{id}` | Student timetable |
+| GET | `/api/timetable/faculty/{id}` | Faculty timetable |
+| GET | `/api/timetable/room/{id}` | Room timetable |
+| GET | `/api/timetable/conflicts` | Conflict report |
+| GET | `/api/timetable/analytics` | Analytics data |
+| GET | `/api/export/excel` | Export as Excel |
+| GET | `/api/export/pdf` | Export as PDF |
+| POST | `/api/upload` | Bulk CSV/Excel upload |
+| POST | `/api/ai/chat` | AI assistant query |
 
 ---
 
-## 📄 6. Exports & Demonstrations
+## 📈 Analytics
 
-1. **Excel Export (`openpyxl` / SheetJS)**: Generates a multi-column master schedule with clean row heights, color-coded headers, and lunch intervals.
-2. **PDF Export (`reportlab` / jsPDF-AutoTable)**: Produces an official university timetable in landscape orientation suitable for printing and notice-board posting.
-3. **AI Assistant**: Accessible via the sidebar or top bar to ask questions like *"Why is Dr. Sharma scheduled on Monday?"*, *"Show free rooms on Tuesday"*, or *"Audit faculty teaching hours"*.
+- Faculty & student workload distribution
+- Room and lab utilization
+- Classes per day / free slot mapping
+- Conflict count and trends
+- Subject distribution across the week
+
+---
+
+## 🌐 Multilingual Support
+
+The UI currently supports **English** and **Hindi**, with translations managed via an extensible i18n structure so additional languages can be added without touching component logic.
+
+---
+
+## 🔒 Security
+
+- API keys and database credentials are never exposed to the frontend
+- All secrets are managed via environment variables
+- CORS is configured explicitly for allowed origins
+- All API inputs are validated via Pydantic
+- Raw stack traces are never shown to end users — only clear, actionable error messages
+
+---
+
+## 🏆 Hackathon Priorities
+
+1. Working timetable generation
+2. Conflict-free scheduling
+3. OR-Tools optimization
+4. NEP 2020 multidisciplinary support
+5. Faculty + student timetables
+6. Simple, professional UI
+7. Multilingual support
+8. Excel/PDF export
+9. Clean, modular architecture
+10. Demo readiness
+
+---
+
+## 📄 License
+
+This project is built for hackathon/educational purposes. Add your preferred license (MIT, Apache 2.0, etc.) here.
