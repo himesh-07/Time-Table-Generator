@@ -1,4 +1,4 @@
-# 🗓️ NEP SmartTimetable AI
+# 🗓️ NEP-2020 SmartTimetable AI
 
 
 **Live Link:** https://timetable-a2006.web.app/
